@@ -1,0 +1,16 @@
+{
+  "generator-ndx": {
+    "filters": {
+      "settings": {
+        "appType": "cli",
+        "clientServer": "server",
+        "description": "flexible async object validation",
+        "server": true,
+        "appName": "i-validate",
+        "gitname": "ndxbxrme",
+        "gitemail": "lewis_the_cat@hotmail.com"
+      }
+    },
+    "appname": "github"
+  }
+}
