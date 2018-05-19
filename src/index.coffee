@@ -13,39 +13,39 @@ module.exports = (->
           result = result or (await arg)
         resolve result
     $number: (min, max) ->
-      if typeof @.item is 'number'
+      if typeof @.$item is 'number'
         result = true
         if typeof min is 'number'
-          result = result and (min <= @.item)
+          result = result and (min <= @.$item)
         if typeof max is 'number'
-          result = result and (max >= @.item)
+          result = result and (max >= @.$item)
         return result
       return false
     $string: (min, max) ->
-      if typeof @.item is 'string'
+      if typeof @.$item is 'string'
         result = true
         if typeof min is 'number'
-          result = result and (min <= @.item.length)
+          result = result and (min <= @.$item.length)
         if typeof max is 'number'
-          result = result and (max >= @.item.length)
+          result = result and (max >= @.$item.length)
         return result
       return false
-    $min: (val) ->
-      val <= @.item
-    $max: (val) ->
-      val >= @.item
+    $min: (min) ->
+      min <= @.$item
+    $max: (max) ->
+      max >= @.$item
     $notEmpty: ->
-      @.item.length
+      @.$item.length
     $empty: ->
-      @.item.length is 0
+      @.$item.length is 0
     $exists: ->
-      @.item or @.item is 0 or @.item is false
+      @.$item or @.$item is 0 or @.$item is false
     $email: ->
-      /^[a-z0-9\-_\.]+@[a-z0-9\-_]+(\.[a-z0-9\-_]+)+$/i.test @.item
+      /^[a-z0-9\-_\.]+@[a-z0-9\-_]+(\.[a-z0-9\-_]+)+$/i.test @.$item
     $emailList: ->
       allGood = true
-      if @.item
-        emails = @.item.split /[;,\s]+/g
+      if @.$item
+        emails = @.$item.split /[;,\s]+/g
         for email in emails
           if email
             allGood = allGood && /^[a-z0-9\-_\.]+@[a-z0-9\-_]+(\.[a-z0-9\-_]+)+$/i.test email
@@ -58,7 +58,7 @@ module.exports = (->
         if key.indexOf('$') is 0
           continue
         if myvalidations = validations[key]?.$validations or validations[key]
-          validationFns.item = obj[key]
+          validationFns.$item = obj[key]
           if typeof myvalidations is 'string' or typeof myvalidations is 'function'
             myvalidations = [myvalidations]
           for validation in myvalidations
@@ -96,6 +96,10 @@ module.exports = (->
     result: true
   setValidations: (_validations) ->
     validations = _validations
+  addValidationFns: (fnsObj) ->
+    for key, fn of fnsObj
+      if typeof fn is 'function'
+        validationFns[key] = fn
   validate: (table, obj) ->
     return await validate validations[table], obj, obj
 )()

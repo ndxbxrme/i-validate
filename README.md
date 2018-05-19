@@ -29,3 +29,11 @@
   .then (result) ->
     console.log 'result', result
 ```
+#### add your own validation functions
+```coffeescript
+  validator.addValidationFns
+    $big: ->
+      @.item > 1000
+    $small: ->
+      @.item < 0.1
+```

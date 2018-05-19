@@ -21,13 +21,13 @@
       },
       $number: function(min, max) {
         var result;
-        if (typeof this.item === 'number') {
+        if (typeof this.$item === 'number') {
           result = true;
           if (typeof min === 'number') {
-            result = result && (min <= this.item);
+            result = result && (min <= this.$item);
           }
           if (typeof max === 'number') {
-            result = result && (max >= this.item);
+            result = result && (max >= this.$item);
           }
           return result;
         }
@@ -35,41 +35,41 @@
       },
       $string: function(min, max) {
         var result;
-        if (typeof this.item === 'string') {
+        if (typeof this.$item === 'string') {
           result = true;
           if (typeof min === 'number') {
-            result = result && (min <= this.item.length);
+            result = result && (min <= this.$item.length);
           }
           if (typeof max === 'number') {
-            result = result && (max >= this.item.length);
+            result = result && (max >= this.$item.length);
           }
           return result;
         }
         return false;
       },
-      $min: function(val) {
-        return val <= this.item;
+      $min: function(min) {
+        return min <= this.$item;
       },
-      $max: function(val) {
-        return val >= this.item;
+      $max: function(max) {
+        return max >= this.$item;
       },
       $notEmpty: function() {
-        return this.item.length;
+        return this.$item.length;
       },
       $empty: function() {
-        return this.item.length === 0;
+        return this.$item.length === 0;
       },
       $exists: function() {
-        return this.item || this.item === 0 || this.item === false;
+        return this.$item || this.$item === 0 || this.$item === false;
       },
       $email: function() {
-        return /^[a-z0-9\-_\.]+@[a-z0-9\-_]+(\.[a-z0-9\-_]+)+$/i.test(this.item);
+        return /^[a-z0-9\-_\.]+@[a-z0-9\-_]+(\.[a-z0-9\-_]+)+$/i.test(this.$item);
       },
       $emailList: function() {
         var allGood, email, emails, i, len;
         allGood = true;
-        if (this.item) {
-          emails = this.item.split(/[;,\s]+/g);
+        if (this.$item) {
+          emails = this.$item.split(/[;,\s]+/g);
           for (i = 0, len = emails.length; i < len; i++) {
             email = emails[i];
             if (email) {
@@ -90,7 +90,7 @@
             continue;
           }
           if (myvalidations = ((ref = validations[key]) != null ? ref.$validations : void 0) || validations[key]) {
-            validationFns.item = obj[key];
+            validationFns.$item = obj[key];
             if (typeof myvalidations === 'string' || typeof myvalidations === 'function') {
               myvalidations = [myvalidations];
             }
@@ -156,6 +156,19 @@
     return {
       setValidations: function(_validations) {
         return validations = _validations;
+      },
+      addValidationFns: function(fnsObj) {
+        var fn, key, results;
+        results = [];
+        for (key in fnsObj) {
+          fn = fnsObj[key];
+          if (typeof fn === 'function') {
+            results.push(validationFns[key] = fn);
+          } else {
+            results.push(void 0);
+          }
+        }
+        return results;
       },
       validate: async function(table, obj) {
         return (await validate(validations[table], obj, obj));
