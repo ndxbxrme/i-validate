@@ -7,7 +7,7 @@
       name: ->
         new Promise (resolve) =>
           window.setTimeout =>
-            resolve @.item
+            resolve @.$item
           , 4000
       age: ['$number()', '$min(10)', '$max(40)']
       cats: 
@@ -33,7 +33,7 @@
 ```coffeescript
   validator.addValidationFns
     $big: ->
-      @.item > 1000
+      @.$item > 1000
     $small: ->
-      @.item < 0.1
+      @.$item < 0.1
 ```
