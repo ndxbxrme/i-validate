@@ -59,6 +59,8 @@ module.exports = (->
           continue
         if myvalidations = validations[key]?.$validations or validations[key]
           validationFns.$item = obj[key]
+          validationFns.$obj = obj
+          validationFns.$root = root
           if typeof myvalidations is 'string' or typeof myvalidations is 'function'
             myvalidations = [myvalidations]
           for validation in myvalidations

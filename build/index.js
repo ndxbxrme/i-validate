@@ -91,6 +91,8 @@
           }
           if (myvalidations = ((ref = validations[key]) != null ? ref.$validations : void 0) || validations[key]) {
             validationFns.$item = obj[key];
+            validationFns.$obj = obj;
+            validationFns.$root = root;
             if (typeof myvalidations === 'string' || typeof myvalidations === 'function') {
               myvalidations = [myvalidations];
             }
