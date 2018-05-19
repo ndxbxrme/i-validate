@@ -9,11 +9,11 @@
           window.setTimeout =>
             resolve @.$item
           , 4000
-      age: ['$number()', '$min(10)', '$max(40)']
+      age: ['$number', '$min(10)', '$max(40)']
       cats: 
-        $validations: '$notEmpty()'
-        name: '$exists()'
-      email: ['$exists()', '$emailList()']
+        $validations: '$notEmpty'
+        name: '$exists'
+      email: ['$exists', '$emailList']
   data =
     name: 'jimbo'
     age: 18

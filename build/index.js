@@ -10,10 +10,10 @@
         var myargs;
         myargs = arguments;
         return new Promise(async function(resolve) {
-          var arg, i, len, result;
+          var arg, j, len, result;
           result = false;
-          for (i = 0, len = myargs.length; i < len; i++) {
-            arg = myargs[i];
+          for (j = 0, len = myargs.length; j < len; j++) {
+            arg = myargs[j];
             result = result || ((await arg));
           }
           return resolve(result);
@@ -66,12 +66,12 @@
         return /^[a-z0-9\-_\.]+@[a-z0-9\-_]+(\.[a-z0-9\-_]+)+$/i.test(this.$item);
       },
       $emailList: function() {
-        var allGood, email, emails, i, len;
+        var allGood, email, emails, j, len;
         allGood = true;
         if (this.$item) {
           emails = this.$item.split(/[;,\s]+/g);
-          for (i = 0, len = emails.length; i < len; i++) {
-            email = emails[i];
+          for (j = 0, len = emails.length; j < len; j++) {
+            email = emails[j];
             if (email) {
               allGood = allGood && /^[a-z0-9\-_\.]+@[a-z0-9\-_]+(\.[a-z0-9\-_]+)+$/i.test(email);
             }
@@ -82,7 +82,7 @@
     };
     validations = {};
     validate = async function(validations, obj, root) {
-      var failedValidation, i, j, key, len, len1, myobj, myvalidations, ref, ref1, type, validation, validationType;
+      var failedValidation, j, k, key, len, len1, myobj, myvalidations, ref, ref1, type, validation, validationType;
       validationType = Object.prototype.toString.call(validations);
       if (validations && validationType !== '[object Array]' && validationType !== '[object String]' && validationType !== '[object Function]') {
         for (key in validations) {
@@ -94,8 +94,8 @@
             if (typeof myvalidations === 'string' || typeof myvalidations === 'function') {
               myvalidations = [myvalidations];
             }
-            for (i = 0, len = myvalidations.length; i < len; i++) {
-              validation = myvalidations[i];
+            for (j = 0, len = myvalidations.length; j < len; j++) {
+              validation = myvalidations[j];
               if (typeof validation === 'function') {
                 if (!(await validation.call(validationFns))) {
                   return {
@@ -139,8 +139,8 @@
                 };
               }
               ref1 = obj[key];
-              for (j = 0, len1 = ref1.length; j < len1; j++) {
-                myobj = ref1[j];
+              for (k = 0, len1 = ref1.length; k < len1; k++) {
+                myobj = ref1[k];
                 if (!(failedValidation = (await validate(validations[key], myobj, root))).result) {
                   return failedValidation;
                 }
@@ -155,7 +155,48 @@
     };
     return {
       setValidations: function(_validations) {
-        return validations = _validations;
+        var doExpand, expandFns;
+        validations = _validations;
+        doExpand = function(validation) {
+          if (typeof validation === 'string') {
+            return validation.replace(/(\$\w+)(?!\()[^\w]|^\s*(\$\w+)\s*$/g, function(a, b, c) {
+              return (b || c) + '()' + (b ? a.substr(a.length - 1) : '');
+            });
+          } else {
+            return validation;
+          }
+        };
+        expandFns = function(obj) {
+          var i, key, results, type, validation, vitem;
+          results = [];
+          for (key in obj) {
+            validation = obj[key];
+            type = Object.prototype.toString.call(validation);
+            switch (type) {
+              case '[object String]':
+                results.push(validation = doExpand(validation));
+                break;
+              case '[object Array]':
+                results.push((function() {
+                  var j, len, results1;
+                  results1 = [];
+                  for (i = j = 0, len = validation.length; j < len; i = ++j) {
+                    vitem = validation[i];
+                    results1.push(validation[i] = doExpand(vitem));
+                  }
+                  return results1;
+                })());
+                break;
+              case '[object Object]':
+                results.push(expandFns(validation));
+                break;
+              default:
+                results.push(void 0);
+            }
+          }
+          return results;
+        };
+        return expandFns(validations);
       },
       addValidationFns: function(fnsObj) {
         var fn, key, results;

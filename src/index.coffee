@@ -96,6 +96,24 @@ module.exports = (->
     result: true
   setValidations: (_validations) ->
     validations = _validations
+    doExpand = (validation) ->
+      if typeof validation is 'string'
+        validation.replace /(\$\w+)(?!\()[^\w]|^\s*(\$\w+)\s*$/g, (a, b, c) ->
+          (b or c) + '()' + (if b then a.substr(a.length - 1) else '')
+      else
+        validation
+    expandFns = (obj) ->
+      for key, validation of obj
+        type = Object.prototype.toString.call validation
+        switch type
+          when '[object String]'
+            validation = doExpand validation
+          when '[object Array]'
+            for vitem, i in validation
+              validation[i] = doExpand vitem
+          when '[object Object]'
+            expandFns validation
+    expandFns validations
   addValidationFns: (fnsObj) ->
     for key, fn of fnsObj
       if typeof fn is 'function'
