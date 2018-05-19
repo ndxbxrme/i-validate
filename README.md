@@ -3,7 +3,7 @@
 ```coffeescript
   validator = require 'i-validate'
   validator.setValidations
-    user:
+    users:
       name: ->
         new Promise (resolve) =>
           window.setTimeout =>
@@ -25,7 +25,7 @@
       name: 'bobby'
       age: 12
     ]
-  validator.validate 'user', data
+  validator.validate 'users', data
   .then (result) ->
     console.log 'result', result
 ```

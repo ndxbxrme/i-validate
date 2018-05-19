@@ -1,6 +1,6 @@
 {
   "name": "i-validate",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "flexible async object validation",
   "main": "build/index.js",
   "scripts": {
